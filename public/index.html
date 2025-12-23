@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login Page</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(-45deg,#667eea,#764ba2,#43cea2,#185a9d);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+  }
+
+  .shake { animation: shake 0.5s; }
+
+  .card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background: #667eea;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover { background: #5a67d8; }
+
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Login</h2>
+  <input type="text" id="userId" placeholder="User ID">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <div class="error" id="errorMsg">Invalid User ID or Password</div>
+</div>
+
+<script>
+function login() {
+  const userId = document.getElementById("userId").value;
+  const password = document.getElementById("password").value;
+  const errorMsg = document.getElementById("errorMsg");
+  const card = document.querySelector(".card");
+
+  fetch("/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, password })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      // Special redirect for ADream
+      if (userId === "ADream") {
+        window.location.href = "https://www.youtube.com/@7ADream";
+      } else {
+        // Normal redirect for other users
+        window.location.href = "display.html?userId=" + encodeURIComponent(userId);
+      }
+    } else {
+      errorMsg.style.display = "block";
+      card.classList.remove("shake");
+      void card.offsetWidth; // trigger reflow
+      card.classList.add("shake");
+    }
+  })
+  .catch(err => console.error(err));
+}
+</script>
+
+</body>
+</html>
